@@ -1,0 +1,39 @@
+import pandas as pd
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import apriori, association_rules
+-----------------
+data = pd.read_csv('C:/Users/LENOVO/Documents/Market_Basket_Optimisation.csv', header=None)
+data
+--------------------
+transactions = []
+for i in range(len(data)):
+    transaction = [str(data.values[i, j]) for j in range(data.shape[1]) if str(data.values[i, j]) != 'nan']
+    transactions.append(transaction)
+------------------------
+te = TransactionEncoder()
+te_ary = te.fit(transactions).transform(transactions)
+df = pd.DataFrame(te_ary, columns=te.columns_)
+
+-----------------------------------
+frequent_itemsets = apriori(df, min_support=0.01, use_colnames=True)
+------------------------------
+pip install -U mlxtend
+-----------------------------
+try:
+    # Try generating association rules in the standard way
+    rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.2)
+except TypeError:
+    # For older versions of mlxtend that require 'num_itemsets'
+    num_itemsets = len(frequent_itemsets)
+    rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.2, num_itemsets=num_itemsets)
+
+--------------------------
+print("Association Rules:")
+print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+------------------
+rules_sorted = rules.sort_values(by='lift', ascending=False)
+top_rules = rules_sorted.head(10)  # Select top 10 rules
+---------------------------
+print("\nTop 10 Rules by Lift:")
+print(top_rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+------------------------------------------

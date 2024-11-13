@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+-------------
+data = pd.read_csv('C:/Users/LENOVO/Documents/SMSSpamCollection.csv',sep='\t',names = ['label','messages'])
+print(data)
+-----------
+x = data['messages']
+y = data['label']
+
+data['label'] = data['label'].map({'ham' : 0,'spam' : 1})
+y = data['label']
+print(data)
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x , y, test_size = 0.25,random_state = 42)
+
+from sklearn.feature_extraction.text import CountVectorizer
+vectorizer = CountVectorizer()
+x_train_count = vectorizer.fit_transform(x_train)
+x_test_count = vectorizer.transform(x_test)
+----------------
+from sklearn.naive_bayes import MultinomialNB
+
+model = MultinomialNB()
+model.fit(x_train_count, y_train)
+
+y_pred = model.predict(x_test_count)
+---------------
+
+from sklearn.metrics import classification_report,accuracy_score
+
+print(f'Accuracy : {accuracy_score(y_test,y_pred):.2f}');
+print(classification_report(y_test,y_pred))
+--------------
+
+import matplotlib.pyplot as plt
+
+label_count = data['label'].value_counts()
+labels = ['Ham','Spam']
+counts = label_count.values
+
+plt.bar(labels, counts, color=['green','red'])
+plt.xlabel('Message Type')
+plt.ylabel('count')
+plt.show()
+-------------------
+
+from sklearn.metrics import ConfusionMatrixDisplay
+ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
+plt.title('Naive Bayes')
+plt.show()
+---------------------------------------

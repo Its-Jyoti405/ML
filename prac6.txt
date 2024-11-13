@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+
+data = pd.read_csv('C:/Users/LENOVO/Documents/ML/Mall_Customers.csv')
+data
+---------------
+data.isnull().sum()
+---------------------
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+le = LabelEncoder()
+data['Genre'] = le.fit_transform(data['Genre'])
+--------------------
+x = data.iloc[:,3:]
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.scatterplot(x = x['Annual Income (k$)'], y = x['Spending Score (1-100)'])
+plt.title('Annual Income vs Spending Score')
+-------------------------------------------
+from sklearn.cluster import KMeans
+model = KMeans(n_clusters = 5)
+labels = model.fit_predict(x)
+model.labels_
+--------------------------------------
+centroid = model.cluster_centers_
+plt.title('Clustered Data')
+sns.scatterplot(x = x['Annual Income (k$)'], y = x['Spending Score (1-100)'],c = labels)
+sns.scatterplot(x = centroid[:,0],y = centroid[:,1],s=200,color = 'red')
+plt.show()
+------------------------------------

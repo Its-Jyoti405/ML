@@ -1,0 +1,47 @@
+import numpy as np
+import pandas as pd
+-------------
+data = pd.read_csv('heart.csv');
+---------
+print(data.head())
+-------------
+duplicates = data.duplicated().sum();
+print("Number of duplicate : ", duplicates);
+-------------
+data_cleaned = data.drop_duplicates();
+print("Number of rows removed : ", data_cleaned.shape[0]);
+----------------
+missing_value = data_cleaned.isnull().sum();
+print(missing_value);
+-------------------
+data_cleaned.to_csv('heart_cleaned.csv',index=False);
+------------
+data = pd.read_csv('heart_cleaned.csv')
+# Fill missing values with median for numeric columns only
+for column in data.columns:
+    if pd.api.types.is_numeric_dtype(data[column]):
+        median_value = data[column].median()
+        data.fillna({column: median_value}, inplace=True)
+		
+# Check for any remaining missing values
+missing_value_after = data.isnull().sum()
+print("Missing values after filling:", missing_value_after)
+------------------------
+data_cleaned.to_csv('heart_cleaned.csv', index = False)
+-----------------
+!pip install scikit-learn
+from sklearn.preprocessing import StandardScaler
+data = pd.read_csv('heart_cleaned.csv');
+--------------
+numerical_feature = data.select_dtypes(include = ['int64','float64']).columns
+scaler = StandardScaler()
+data[numerical_feature] = scaler.fit_transform(data[numerical_feature])
+print('Data after scaling : ')
+print(data.head())
+--------------------
+
+from sklearn.model_selection import train_test_split
+train_data, test_data = train_test_split(data, test_size = 0.25,random_state = 42)
+print("Training data size:", train_data.shape)
+print("Testing data size:", test_data.shape)
+----------------------------
